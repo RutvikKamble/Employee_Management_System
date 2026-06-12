@@ -11,9 +11,10 @@
     <div class="header">
         <h1>Employee Details</h1>
 
-        <input type="text" id="searchInput" placeholder="Search by name..." onkeyup="filterEmployees()" />
+        <input type="text" id="searchInput" placeholder="Search..." onkeyup="filterEmployees()" />
 
         <button onclick="toggleForm()">Add Employee</button>
+
     </div>
 
     <!-- TABLE -->
@@ -64,7 +65,14 @@
 
                 <div>
                     <label>Designation</label>
-                    <input type="text" id="designation">
+                    <select id="designation">
+                        <option>Backend Developer</option>
+                        <option>UI Designer</option>
+                        <option>QA Engineer</option>
+                        <option>Softwart Developer</option>
+                        <option>Data Analyst</option>
+                        <option>System Engineer</option>
+                    </select>
                 </div>
 
                 <div>
@@ -133,6 +141,6 @@
     </div>
 </div>
 
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

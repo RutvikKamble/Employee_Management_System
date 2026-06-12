@@ -16,17 +16,22 @@ async function loadEmployees() {
 
         console.log("DATA:", data);
 
+        // Sort employees by name
+        data.sort((a, b) =>
+            (a.employeeName || "").localeCompare(b.employeeName || "")
+        );
+
         const tbody = document.querySelector("#employeeTableBody");
         tbody.innerHTML = "";
 
-        data.forEach(emp => {
+        data.forEach((emp, index) => {
 
             // CREATE ROW FIRST
             const rowElement = document.createElement("tr");
 
             // ADD DATA
             rowElement.innerHTML = `
-                <td>${emp.employeeId || ""}</td>
+                <td>${index + 1}</td>
                 <td>${emp.employeeName || ""}</td>
                 <td>${emp.designation || ""}</td>
                 <td>${emp.joiningDate || ""}</td>
@@ -63,6 +68,13 @@ async function loadEmployees() {
     } catch (err) {
         console.error("ERROR:", err);
     }
+}
+
+function deleteEmployee(id) {
+    fetch(`/delete/${id}`, {
+        method: "DELETE"
+    })
+    .then(() => loadData());  // reload → index auto reset
 }
 
 
@@ -126,7 +138,7 @@ document.getElementById("employeeForm").addEventListener("submit", async functio
         let res;
 
         if (isUpdateMode) {
-            // 🔥 UPDATE API
+            // UPDATE API
             res = await fetch(`${API_URL}/${selectedEmployeeId}`, {
                 method: "PUT",
                 headers: {
@@ -136,7 +148,7 @@ document.getElementById("employeeForm").addEventListener("submit", async functio
             });
 
         } else {
-            // ➕ ADD API
+            // ADD API
             res = await fetch(API_URL, {
                 method: "POST",
                 headers: {
@@ -150,7 +162,7 @@ document.getElementById("employeeForm").addEventListener("submit", async functio
             throw new Error("Operation failed");
         }
 
-        alert(isUpdateMode ? "Employee Updated ✅" : "Employee Added ✅");
+        alert(isUpdateMode ? "Employee Updated" : "Employee Added");
 
         // Reset
         isUpdateMode = false;
@@ -212,7 +224,7 @@ document.getElementById("deleteBtn").addEventListener("click", async () => {
             throw new Error("Delete failed");
         }
 
-        alert("Employee Deleted ✅");
+        alert("Employee Deleted");
 
         selectedEmployeeId = null;
         selectedRow = null;
