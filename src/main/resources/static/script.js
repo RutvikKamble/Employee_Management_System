@@ -5,9 +5,18 @@ let selectedRow = null;
 let isUpdateMode = false;
 
 let employeeData = [];
+let allEmployees = [];
 
 
 function renderTable(data) {
+
+    data.sort((a, b) =>
+            (a.employeeName || "")
+                .toLowerCase()
+                .localeCompare(
+                    (b.employeeName || "").toLowerCase()
+                )
+        );
 
     const tbody = document.querySelector("#employeeTableBody");
     tbody.innerHTML = "";
@@ -63,8 +72,11 @@ async function loadEmployees() {
         const res = await fetch(API_URL);
         const data = await res.json();
 
+        allEmployees = [...data];
         employeeData = [...data];
-        console.log("DATA:", data);
+
+        //console.log("DATA:", data);
+
         renderTable(data);
     }
     catch (err)
@@ -80,24 +92,7 @@ function deleteEmployee(id) {
     .then(() => loadData());  // reload → index auto reset
 }
 
-
-function filterEmployees() {
-    const searchValue = document.getElementById("searchInput").value.toLowerCase();
-    const rows = document.querySelectorAll("#employeeTableBody tr");
-
-    rows.forEach(row => {
-        const name = row.children[1].textContent.toLowerCase();
-
-        if (name.includes(searchValue)) {
-            row.style.display = "";
-            row.style.backgroundColor = "#fff3cd"; // highlight color
-        } else {
-            row.style.display = "none";
-        }
-    });
-}
-
-
+/*
 function filterEmployees() {
     const searchValue = document.getElementById("searchInput").value.toLowerCase();
     const rows = document.querySelectorAll("#employeeTableBody tr");
@@ -118,7 +113,7 @@ function filterEmployees() {
         }
     });
 }
-
+*/
 
 document.getElementById("employeeForm").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -284,3 +279,27 @@ function sortEmployees() {
     renderTable(sortedData);
 }
 // window.onload = loadEmployees;
+
+function searchEmployees() {
+    const searchText = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const filteredData = allEmployees.filter(emp => {
+
+        return (
+            (emp.employeeName && emp.employeeName.toLowerCase().includes(searchText)) ||
+            (emp.designation && emp.designation.toLowerCase().includes(searchText)) ||
+            (emp.address && emp.address.toLowerCase().includes(searchText)) ||
+            (emp.gender && emp.gender.toLowerCase().includes(searchText)) ||
+            (emp.city && emp.city.toLowerCase().includes(searchText)) ||
+            (emp.state && emp.state.toLowerCase().includes(searchText)) ||
+            (emp.employeeType && emp.employeeType.toLowerCase().includes(searchText))
+        );
+
+    });
+
+    renderTable(filteredData);
+}
