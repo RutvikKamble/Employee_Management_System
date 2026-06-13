@@ -4,68 +4,71 @@ let selectedEmployeeId = null;
 let selectedRow = null;
 let isUpdateMode = false;
 
+let employeeData = [];
+
+
+function renderTable(data) {
+
+    const tbody = document.querySelector("#employeeTableBody");
+    tbody.innerHTML = "";
+
+    data.forEach((emp, index) => {
+
+        const rowElement = document.createElement("tr");
+
+        rowElement.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${emp.employeeName || ""}</td>
+            <td>${emp.designation || ""}</td>
+            <td>${emp.joiningDate || ""}</td>
+            <td>${emp.salary || ""}</td>
+            <td>${emp.address || ""}</td>
+            <td>${emp.mobileNo || ""}</td>
+            <td>${emp.gender || ""}</td>
+            <td>${emp.city || ""}</td>
+            <td>${emp.state || ""}</td>
+            <td>${emp.country || ""}</td>
+            <td>${emp.employeeType || ""}</td>
+        `;
+
+        rowElement.addEventListener("click", () => {
+
+            if (selectedRow) {
+                selectedRow.classList.remove("selected-row");
+            }
+
+            selectedRow = rowElement;
+            selectedEmployeeId = emp.employeeId;
+
+            rowElement.classList.add("selected-row");
+
+            document.getElementById("updateBtn").disabled = false;
+            document.getElementById("deleteBtn").disabled = false;
+        });
+
+        tbody.appendChild(rowElement);
+    });
+}
+
+
 function toggleForm() {
     const modal = document.getElementById("formModal");
     modal.style.display = modal.style.display === "block" ? "none" : "block";
 }
 
+
 async function loadEmployees() {
-    try {
+    try
+    {
         const res = await fetch(API_URL);
         const data = await res.json();
 
+        employeeData = [...data];
         console.log("DATA:", data);
-
-        // Sort employees by name
-        data.sort((a, b) =>
-            (a.employeeName || "").localeCompare(b.employeeName || "")
-        );
-
-        const tbody = document.querySelector("#employeeTableBody");
-        tbody.innerHTML = "";
-
-        data.forEach((emp, index) => {
-
-            // CREATE ROW FIRST
-            const rowElement = document.createElement("tr");
-
-            // ADD DATA
-            rowElement.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${emp.employeeName || ""}</td>
-                <td>${emp.designation || ""}</td>
-                <td>${emp.joiningDate || ""}</td>
-                <td>${emp.salary || ""}</td>
-                <td>${emp.address || ""}</td>
-                <td>${emp.mobileNo || ""}</td>
-                <td>${emp.gender || ""}</td>
-                <td>${emp.city || ""}</td>
-                <td>${emp.state || ""}</td>
-                <td>${emp.country || ""}</td>
-                <td>${emp.employeeType || ""}</td>
-            `;
-
-            // CLICK EVENT
-            rowElement.addEventListener("click", () => {
-
-                if (selectedRow) {
-                    selectedRow.classList.remove("selected-row");
-                }
-
-                selectedRow = rowElement;
-                selectedEmployeeId = emp.employeeId;
-
-                rowElement.classList.add("selected-row");
-
-                document.getElementById("updateBtn").disabled = false;
-                document.getElementById("deleteBtn").disabled = false;
-            });
-
-            // APPEND
-            tbody.appendChild(rowElement);
-        });
-
-    } catch (err) {
+        renderTable(data);
+    }
+    catch (err)
+    {
         console.error("ERROR:", err);
     }
 }
@@ -242,4 +245,42 @@ document.getElementById("deleteBtn").addEventListener("click", async () => {
 
 document.addEventListener("DOMContentLoaded", loadEmployees);
 
+
+function sortEmployees() {
+
+    const sortValue =
+        document.getElementById("sortOption").value;
+
+    let sortedData = [...employeeData];
+
+    // Sort By Name
+    if (sortValue === "name")
+    {
+        sortedData.sort((a, b) =>
+            (a.employeeName || "")
+                .localeCompare(b.employeeName || "")
+        );
+    }
+
+    // Sort By Date
+    else if (sortValue === "date")
+    {
+        sortedData.sort((a, b) =>
+            new Date(a.joiningDate) -
+            new Date(b.joiningDate)
+        );
+    }
+
+    // Sort By Salary
+    else if (sortValue === "salary")
+    {
+        sortedData.sort((a, b) =>
+            (a.salary || 0) -
+            (b.salary || 0)
+        );
+    }
+    // console.log("Sorted Data:", sortedData);
+
+    renderTable(sortedData);
+}
 // window.onload = loadEmployees;

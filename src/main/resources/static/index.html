@@ -11,9 +11,16 @@
     <div class="header">
         <h1>Employee Details</h1>
 
+        <button onclick="toggleForm()">Add Employee</button>
+
         <input type="text" id="searchInput" placeholder="Search..." onkeyup="filterEmployees()" />
 
-        <button onclick="toggleForm()">Add Employee</button>
+        <select id="sortOption" onchange="sortEmployees()">
+            <option value="">Sort By</option>
+            <option value="name">Sort By Name</option>
+            <option value="date">Sort By Date</option>
+            <option value="salary">Sort By Salary</option>
+        </select>
 
     </div>
 
